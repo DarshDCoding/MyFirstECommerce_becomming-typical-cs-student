@@ -2,8 +2,6 @@ from .models import CartItem, Cart
 from django.db.models import Sum
 from MyCart.utils import cart_id
 
-#TODO: create cart items count by getting current cart session id and quantity of cart_items
-
 def cart_item_count(request):
 
     try:
