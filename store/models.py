@@ -9,6 +9,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField(max_length=500, blank=True)
     price = models.IntegerField()
+    tax = models.IntegerField(default=2)
     images = models.ImageField(upload_to="photos/products/")
     stock = models.IntegerField()
     is_available = models.BooleanField(default=True)
@@ -23,3 +24,6 @@ class Product(models.Model):
 
     def get_url(self):
         return reverse('product_details', args=[self.category.slug, self.slug])
+
+    def get_taxed_price(self):
+        return self.price * (self.tax/100)

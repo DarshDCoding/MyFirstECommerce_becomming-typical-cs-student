@@ -71,7 +71,7 @@
 	</div> <!-- row.// -->
 	<hr>
 	{% if product.stock %}
-	<a href="./product-detail.html" class="btn  btn-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
+	<a href="{% url 'add_item' product.id %}" class="btn  btn-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
 	{% else %}
 	<h5 class="text-danger">Out of stock babu</h5>
 	<h5 class="text-danger">Ghat jaake sutti babu</h5>

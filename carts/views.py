@@ -1,17 +1,12 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
-
 from store.models import Product
 from .models import CartItem, Cart
 
+from MyCart.utils import cart_id as _cart_id
+
 
 # Create your views here.
-
-def _cart_id(request):
-    cart = request.session.session_key
-
-    if not cart:
-        cart = request.session.create()
-    return cart
 
 def add_item(request, product_id):
     product = Product.objects.get(id=product_id)
@@ -32,18 +27,26 @@ def add_item(request, product_id):
     return redirect('cart')
 
 def cart(request):
-    products = CartItem.objects.all()
-    total_price = 0
-    data= []
-    for product in products:
-        total_price += product.product.price*product.quantity
-        data.append({
-            'product_name': product.product.product_name,
-            'image': product.product.images.url,
-            'quantity': product.quantity,
-            'price': product.product.price,
-            'total_price': product.product.price * product.quantity
-        })
-    context = {'products': data, 'total_price': total_price}
+    total = 0
+    quantity = 0
+    taxed_total = 0
+    grand_total = 0
+    try:
+        cart = Cart.objects.get(cart_id = _cart_id(request))
+        cart_items = CartItem.objects.filter(cart = cart, is_active = True)
+        for items in cart_items:
+            total += items.quantity * items.product.price
+            taxed_total += (items.quantity * items.product.get_taxed_price())
+            quantity += items.quantity
+        grand_total = total + taxed_total
+    except ObjectDoesNotExist:
+        cart_items = None
+    context = {
+        'total': total,
+        'cart_items': cart_items,
+        'quantity': quantity,
+        'tax': taxed_total,
+        'grand_total': grand_total,
+    }
 
     return render(request, 'cart/cart.html', context)
