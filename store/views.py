@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -48,3 +49,14 @@ def product_details(request, category_slug, product_slug):
     }
 
     return render(request, 'store/product-detail.html', context)
+
+def search (request):
+    if "keyword" in request.GET:
+        keywords = request.GET["keyword"]
+        if keywords:
+            products = Product.objects.filter(description__icontains = keywords)
+    context = {
+        'products':products,
+    }
+
+    return render(request, 'store/store.html', context)
